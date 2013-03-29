@@ -1,4 +1,6 @@
 ﻿// 2008.02.24 例外が発生した場合の処理をちゃんと記述
+// 2008.03.04 Invokeを使わず同期オブジェクトを使ってステータス表示を更新
+// 　　　　　 ダウンロードスレッドを停止する方法を別途作成
 //
 using System;
 using System.Collections.Generic;
@@ -180,7 +182,11 @@ namespace FileDownloadApplication
                     string data = sr.ReadLine();
                     while (data != null)
                     {
-                        this.listURLList.Items.Add(data);
+                        data = data.Trim();
+                        if (data.Length > 0)
+                        {
+                            this.listURLList.Items.Add(data);
+                        }
 
                         data = sr.ReadLine();
                     }
@@ -233,7 +239,7 @@ namespace FileDownloadApplication
             }
 
             System.Net.HttpWebResponse webres = null;
-
+            this.buttonAddUrl.Enabled = false;
             try
             {
                 System.Net.HttpWebRequest webreq =
@@ -247,6 +253,10 @@ namespace FileDownloadApplication
                         this.listURLList.Items.Add(addURL);
                         InvokeSaveToURLList();
                         this.textDownloadUrl.Text = "";
+                    }
+                    else
+                    {
+                        MessageBox.Show("すでに同じURLが登録されています。");
                     }
                 }
             }
@@ -265,6 +275,7 @@ namespace FileDownloadApplication
                     webres.Close();
                     webres = null;
                 }
+                this.buttonAddUrl.Enabled = true;
             }
         }
 
@@ -352,6 +363,7 @@ namespace FileDownloadApplication
         protected void DownloadFile(string url, string downloadToPath)
         {
             string downloadFileName = Path.GetFileName(url);
+            downloadFileName = ChangeFileInvalidChar(downloadFileName);
             string downloadFileFullName = Path.Combine(downloadToPath, downloadFileName);
             string downloadTempName = downloadFileFullName + ".tmp";
 
@@ -500,11 +512,56 @@ namespace FileDownloadApplication
         }
 
         /// <summary>
+        /// ファイル名としてふさわしく無い文字列を置き換える
+        /// </summary>
+        /// <param name="downloadFileName"></param>
+        /// <returns></returns>
+        private string ChangeFileInvalidChar(string downloadFileName)
+        {
+            StringBuilder ans = new StringBuilder();
+            for (int i = 0; i < downloadFileName.Length; i++)
+            {
+                char c = downloadFileName[i];
+                if (IsInvalidChar(c))
+                {
+                    ans.Append("_");
+                }
+                else
+                {
+                    ans.Append(c);
+                }
+            }
+            return ans.ToString();
+        }
+
+        static char[] ng_char = new char[] { '?', '<', '>', '&' };
+        bool IsInvalidChar(char c)
+        {
+
+            foreach (char cc in System.IO.Path.GetInvalidFileNameChars())
+            {
+                if (cc == c)
+                {
+                    return true;
+                }
+            }
+            foreach (char cc in ng_char)
+            {
+                if (cc == c)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// ダウンロード完了したURLをログに出力する。
         /// </summary>
         /// <param name="filename">ログのファイル名</param>
         /// <param name="url">ダウンロード完了したURL</param>
-        protected static void WriteDownloadUrlLog(string filename,string url)
+        protected static void WriteDownloadUrlLog(string filename, string url)
         {
             using (StreamWriter sw = new StreamWriter(filename, true))
             {
@@ -525,6 +582,7 @@ namespace FileDownloadApplication
         /// <param name="downloadByte">ダウンロードしたバイト数（「ダウンロード済み／全体」の書式で設定する）</param>
         protected void InvokeDownloadStatus(string url, string downloadByte)
         {
+#if false
             if (this.InvokeRequired)
             {
                 DownloadStatusDelegate func = new DownloadStatusDelegate(this.InvokeDownloadStatus);
@@ -534,6 +592,9 @@ namespace FileDownloadApplication
 
             this.toolStripStatusLabel1.Text = url;
             this.toolStripStatusLabel2.Text = downloadByte;
+#else
+            SetStatusbarText(url, downloadByte);
+#endif
         }
 
         /// <summary>
@@ -614,6 +675,65 @@ namespace FileDownloadApplication
             {
                 this.buttonAddUrl.Enabled = false;
             }
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            TimerUpdateStatus();
+        }
+
+        /// <summary>
+        /// ステータスバーの表示を別スレッドから更新するための処理
+        /// メインスレッドでは定期的にテキストを画面に設定している。
+        /// </summary>
+        /// <param name="msg1"></param>
+        /// <param name="msg2"></param>
+        void SetStatusbarText(string msg1, string msg2)
+        {
+            lock (status_msg_sync)
+            {
+                this.status_msg1 = msg1;
+                this.status_msg2 = msg2;
+                status_msg_signal = true;
+            }
+        }
+
+        object status_msg_sync = new object();
+
+        /// <summary>
+        /// ステータスバーに表示刷る文字
+        /// </summary>
+        private string status_msg1 = null;
+        private string status_msg2 = null;
+
+        /// <summary>
+        /// ステータス文字列が変更されたか？を保持する変数
+        /// </summary>
+        private volatile bool status_msg_signal = false;
+
+        /// <summary>
+        /// ステータスバーの値を更新する。
+        /// </summary>
+        private void TimerUpdateStatus()
+        {
+            if (status_msg_signal)
+            {
+                lock (status_msg_sync)
+                {
+                    if (status_msg1 == null) status_msg1 = "";
+                    if (status_msg2 == null) status_msg2 = "";
+
+                    this.toolStripStatusLabel1.Text = status_msg1;
+                    this.toolStripStatusLabel2.Text = status_msg2;
+
+                    status_msg_signal = false;
+                }
+            }
+        }
+
+        private void DownloadForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+
         }
     }
 }
