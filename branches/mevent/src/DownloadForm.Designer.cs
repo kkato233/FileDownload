@@ -30,6 +30,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.buttonChangeDownloadPath = new System.Windows.Forms.Button();
             this.textDownloadPath = new System.Windows.Forms.TextBox();
             this.listURLList = new System.Windows.Forms.ListBox();
@@ -42,6 +43,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -156,6 +158,11 @@
             // 
             this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.Personal;
             // 
+            // timer1
+            // 
+            this.timer1.Enabled = true;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
             // DownloadForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -174,6 +181,7 @@
             this.Name = "DownloadForm";
             this.Text = "ファイルのダウンロード";
             this.Shown += new System.EventHandler(this.DownloadForm_Shown);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.DownloadForm_FormClosed);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -195,6 +203,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
+        private System.Windows.Forms.Timer timer1;
 
     }
 }
