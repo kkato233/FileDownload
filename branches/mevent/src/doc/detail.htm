@@ -1,0 +1,118 @@
+﻿<html>
+<head>
+<link href="css/style.css" type="text/css" rel="stylesheet" />
+<title>実装の詳細設計</title>
+</head>
+<body>
+<div id="PAGE">
+<div id="KIZI">
+<h1>実装の詳細設計</h1>
+<p>
+アプリケーションを作成する上で参考となる技術的な情報。
+アプリケーションの定義
+</p>
+
+<h2>基本的な動作</h2>
+<p>
+アプリケーションは<br />
+・ユーザからダウンロードするURLを入力してもらい、ダウンロードリストに登録する部分<br />
+・バックグラウンドのスレッドで 指定のURLからファイルをダウンロードする部分<br />
+・ダウンロードが中断された場合でも継続してダウンロードできるようにする処理の部分<br />
+・ダウンロード状況を画面に表示する部分<br />
+に大まかに分類できる。
+</p>
+
+<h2>技術的な解説</h2>
+<h3>中断したダウンロードを再開するための方法</h3>
+<p>
+ダウンロードするファイルは 一時的に <code>[ダウンロードファイル名].tmp</code> という名前で
+ダウンロードフォルダに書き込みます。<br />
+ダウンロードを開始するタイミングですでにこの<code>.tmp ファイル</code> が存在する場合には
+ダウンロードファイルの途中からファイルを取得するように要求をだし、サーバが正しく応答すれば
+その <code>.tmp ファイル</code> にダウンの続きを追加します。
+</p>
+<p>
+ダウンロードを途中から継続するために HTTP 通信のリクエストに 
+<see cref="System.Net.HttpWebRequest.AddRange" >HttpWebRequest.AddRange</see>
+で範囲を指定してファイルを要求します。
+</p>
+<p>
+サーバ側が対応していれば HTTP ステータスコード<code>206:Partial Content</code>
+が返されるので<code>Content-Range</code>ヘッダを調べるて途中からのファイルダウンロードを行います。
+<br />
+この処理は <see cref="FileDownloadApplication.DownloadForm.DownloadFile" >DownloadFile 関数</see> に実装されています。
+</p>
+
+<h3>バックグランドスレッドからメインスレッドの値を取得・設定する方法</h3>
+<p>
+ダウンロードはバックグラウンドのスレッドで行いメインスレッド上にあるフォームの値を取得するためには
+<see cref="System.Windows.Forms.Control.Invoke" />関数を使って値を取得します。
+<see cref="FileDownloadApplication.DownloadForm.InvokeSaveToURLList" />では
+</p>
+<pre lang="cs">
+protected void InvokeSaveToURLList()
+{
+    if (this.InvokeRequired)
+    {
+        // 別スレッドから呼び出されている場合はこちら
+        this.Invoke(new MethodInvoker(this.InvokeSaveToURLList));
+        return;
+    }
+    // 以下の処理はメインスレッドで実行される
+    using (StreamWriter sw = new StreamWriter(SelectedFileName, false))
+    {
+        foreach (string urlItem in this.listURLList.Items)
+        {
+            sw.WriteLine(urlItem);
+        }
+        sw.Flush();
+        sw.Close();
+    }
+}
+</pre>
+<p>
+のように実装しています。
+</p>
+
+<h2>アプリケーションの各種設定</h2>
+
+<h3>ダウンロードファイルの管理</h3>
+<p>
+ダウンロードのファイルは ダウンロード先のディレクトリに <code>filelist.txt</code> という
+ファイル名でダウンロードするURLを保存します。
+</p>
+
+<h3>ダウンロード完了ファイル一覧</h3>
+<p>ダウンロード完了したURLはダウンロード先のディレクトリのに <code>complate.log</code> 
+ファイルにダウンロードしたURLを記入します。
+</p>
+<h3>エラーログ</h3>
+<p>
+ダウンロードでエラーが発生した場合は <code>error.txt</code> ファイルとデバッグログへ詳細を
+出力します。
+</p>
+
+<h3 id="BeforDownloadPath">前回利用したダウンロードホルダの記憶</h3>
+<p>
+アプリケーションが起動して前回利用していたディレクトリの情報を利用する方法。
+</p>
+<p>
+設定は、アプリケーションの <code>Properties.Settings.Default.BeforDownloadPath</code>
+の値を利用する。
+</p>
+<p>
+アプリケーションでユーザが意図してディレクトリを変更した場合にのみ、指定のディレクトリを
+設定ファイルに保存する。
+</p>
+<p>
+この<code>Properties.Settings.Default</code>に保存された値は、バージョンUP等で実行ファイルのバージョン番号が変更された場合に初期値に
+戻ってしまう。<br />
+この現象を回避するために <code>Properties.Settings.Default.GetPreviousVersion</code> 
+で過去のバージョンのアプリケーションで設定した値を取得して現在のバージョンの値に設定する。<br />
+具体的には <see cref="GetSavedDownloadPathName" /> 関数を参照。
+</p>
+
+</div>
+</div>
+</body>
+</html>
