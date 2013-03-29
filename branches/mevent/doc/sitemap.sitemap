@@ -1,8 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<siteMap xmlns="http://schemas.microsoft.com/AspNet/SiteMap-File-1.0">
-  <siteMapNode title="仕様書" url="..\FileDownload\doc\index.htm" isDefault="true">
-    <siteMapNode title="仕様書" url="..\FileDownload\doc\index.htm" />
-    <siteMapNode title="実装の詳細" url="..\FileDownload\doc\detail.htm" />
-    <siteMapNode title="変更履歴" url="..\FileDownload\doc\changelog.htm" />
-  </siteMapNode>
-</siteMap>
