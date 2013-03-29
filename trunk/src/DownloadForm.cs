@@ -100,7 +100,7 @@ namespace FileDownloadApplication
         /// Properties.Settings.Default から設定が見つからない場合には
         /// 過去のバージョンで利用している値を取得する。
         /// <see cref="System.Configuration.ApplicationSettingsBase.GetPreviousVersion"/>
-        /// <code source="..\FileDownload\DownloadForm.cs"
+        /// <code source="..\src\DownloadForm.cs"
         /// region="GetSavedDownloadPathName_Code" title="実際のコード" />
         /// </remarks>
         /// <returns>保存されているダウンロードディレクトリ名</returns>
