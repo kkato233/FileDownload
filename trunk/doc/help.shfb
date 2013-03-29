@@ -1,6 +1,6 @@
-﻿<project schemaVersion="1.6.0.2">
+﻿<project schemaVersion="1.6.0.7">
     <assemblies>
-        <assembly assemblyPath="..\FileDownload\bin\Debug\FileDownload.exe" xmlCommentsPath="..\FileDownload\bin\Debug\FileDownload.xml" commentsOnly="False" />
+        <assembly assemblyPath="..\src\bin\Debug\FileDownload.exe" xmlCommentsPath="..\src\bin\Debug\FileDownload.xml" commentsOnly="False" />
     </assemblies>
     <namespaceSummaries>
         <namespaceSummaryItem name="" isDocumented="False" />
@@ -9,11 +9,11 @@
         <namespaceSummaryItem name="WindowsApplication1" isDocumented="False" />
         <namespaceSummaryItem name="WindowsApplication1.Properties" isDocumented="False" />
     </namespaceSummaries>
-    <additionalContent>
-        <contentItem sourcePath="..\FileDownload\doc\*.*" destPath="doc\" excludeItems="False" />
+    <additionalContent contentSiteMap=".\sitemap.sitemap" topicFileTransform="">
+        <contentItem sourcePath="..\src\doc\*.*" destPath="doc\" excludeItems="False" />
     </additionalContent>
     <ProjectSummary />
-    <MissingTags>Parameter, Returns, AutoDocumentCtors</MissingTags>
+    <MissingTags>Parameter, Returns, AutoDocumentCtors, TypeParameter</MissingTags>
     <VisibleItems>InheritedMembers, Protected, SealedProtected</VisibleItems>
     <HtmlHelp1xCompilerPath path="" />
     <HtmlHelp2xCompilerPath path="" />
@@ -22,12 +22,11 @@
     <WorkingPath path="" />
     <CleanIntermediates>False</CleanIntermediates>
     <KeepLogFile>True</KeepLogFile>
+    <BuildLogFile path="" />
     <HelpFileFormat>HtmlHelp1x</HelpFileFormat>
-    <PurgeDuplicateTopics>True</PurgeDuplicateTopics>
     <CppCommentsFixup>False</CppCommentsFixup>
     <FrameworkVersion>2.0.50727</FrameworkVersion>
-    <BinaryTOC>True</BinaryTOC>
-    <IncludeFavorites>False</IncludeFavorites>
+    <IndentHtml>False</IndentHtml>
     <Preliminary>False</Preliminary>
     <RootNamespaceContainer>False</RootNamespaceContainer>
     <RootNamespaceTitle />
@@ -37,6 +36,7 @@
     <CopyrightHref />
     <CopyrightText />
     <FeedbackEMailAddress />
+    <FeedbackEMailLinkText />
     <HeaderText />
     <FooterText />
     <ProjectLinkType>Local</ProjectLinkType>
@@ -46,7 +46,11 @@
     <NamingMethod>Guid</NamingMethod>
     <SyntaxFilters>Standard</SyntaxFilters>
     <ShowFeedbackControl>False</ShowFeedbackControl>
+    <BinaryTOC>True</BinaryTOC>
+    <IncludeFavorites>False</IncludeFavorites>
+    <CollectionTocStyle>Hierarchical</CollectionTocStyle>
+    <IncludeStopWordList>True</IncludeStopWordList>
+    <PlugInNamespaces>ms.vsipcc+, ms.vsexpresscc+</PlugInNamespaces>
+    <HelpFileVersion>1.0.0.0</HelpFileVersion>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
-    <ContentSiteMap path=".\sitemap.sitemap" />
-    <TopicFileTransform path="" />
 </project>
