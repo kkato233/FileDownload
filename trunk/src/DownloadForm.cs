@@ -1,4 +1,6 @@
-﻿using System;
+﻿// 2008.02.24 例外が発生した場合の処理をちゃんと記述
+//
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -230,20 +232,40 @@ namespace FileDownloadApplication
                 return;
             }
 
-            System.Net.HttpWebRequest webreq =
-                (System.Net.HttpWebRequest)System.Net.WebRequest.Create(url);
-            System.Net.HttpWebResponse webres = (System.Net.HttpWebResponse)webreq.GetResponse();
-            if (webres.StatusCode == System.Net.HttpStatusCode.OK)
+            System.Net.HttpWebResponse webres = null;
+
+            try
             {
-                string addURL = webres.ResponseUri.AbsoluteUri;
-                if (!this.listURLList.Items.Contains(addURL))
+                System.Net.HttpWebRequest webreq =
+                    (System.Net.HttpWebRequest)System.Net.WebRequest.Create(url);
+                webres = (System.Net.HttpWebResponse)webreq.GetResponse();
+                if (webres.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    this.listURLList.Items.Add(addURL);
-                    InvokeSaveToURLList();
-                    this.textDownloadUrl.Text = "";
+                    string addURL = webres.ResponseUri.AbsoluteUri;
+                    if (!this.listURLList.Items.Contains(addURL))
+                    {
+                        this.listURLList.Items.Add(addURL);
+                        InvokeSaveToURLList();
+                        this.textDownloadUrl.Text = "";
+                    }
                 }
             }
-
+            catch (System.Net.WebException exp)
+            {
+                MessageBox.Show(exp.Message);
+            }
+            catch (Exception exp)
+            {
+                MessageBox.Show("システムエラー：" + exp.Message);
+            }
+            finally
+            {
+                if (webres != null)
+                {
+                    webres.Close();
+                    webres = null;
+                }
+            }
         }
 
         private void DownloadForm_Shown(object sender, EventArgs e)
@@ -361,6 +383,7 @@ namespace FileDownloadApplication
             webreq.Headers.Add("Cache-Control", "no-cache");
 
             System.Net.HttpWebResponse webres = null;
+
             try
             {
                 //サーバーからの応答を受信するためのWebResponseを取得
@@ -379,14 +402,15 @@ namespace FileDownloadApplication
                 else
                     Console.WriteLine(e.Message);
 
+                webres.Close();
                 throw new ApplicationException("データ取得エラー", e);
             }
 
             //エンティティタグの表示
             Console.WriteLine("ETag:" + webres.GetResponseHeader("ETag"));
-            System.IO.FileStream fs = null;
-            System.IO.Stream strm = null;
 
+            System.IO.Stream strm = null;
+            System.IO.FileStream fs = null;
             try
             {
                 //応答データを受信するためのStreamを取得
