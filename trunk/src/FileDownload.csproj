@@ -25,7 +25,7 @@
     <SignAssembly>false</SignAssembly>
     <ApplicationRevision>0</ApplicationRevision>
     <UseApplicationTrust>false</UseApplicationTrust>
-    <PublishUrl>publish\</PublishUrl>
+    <PublishUrl>..\publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>true</UpdateEnabled>
