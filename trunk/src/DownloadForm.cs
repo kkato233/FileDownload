@@ -287,7 +287,7 @@ namespace FileDownloadApplication
 
         /// <summary>
         /// ダウンロードのメインループ
-        /// </summary>[
+        /// </summary>
         /// <remarks>
         /// 基本的な動作：
         /// <para>
@@ -477,6 +477,10 @@ namespace FileDownloadApplication
                 {
                     strm.Close();
                     strm.Dispose();
+                }
+                if (webres != null)
+                {
+                    webres.Close();
                 }
             }
             // ダウンロードファイルの移動
