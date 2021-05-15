@@ -9,7 +9,7 @@ using System.Resources;
 [assembly: AssemblyTitle("FileDownloadApplication")]
 [assembly: AssemblyDescription("ファイルをダウンロードするアプリケーション")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("hiro3-soft.com")]
+[assembly: AssemblyCompany("ksysllc.co.jp")]
 [assembly: AssemblyProduct("FileDownloadApplication")]
 [assembly: AssemblyCopyright("Copyright (C)  2008")]
 [assembly: AssemblyTrademark("")]
@@ -30,6 +30,6 @@ using System.Resources;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("0.5.3.0")]
-[assembly: AssemblyFileVersion("0.5.3.0")]
+[assembly: AssemblyVersion("0.6.0.0")]
+[assembly: AssemblyFileVersion("0.6.0.0")]
 [assembly: NeutralResourcesLanguageAttribute("ja")]
